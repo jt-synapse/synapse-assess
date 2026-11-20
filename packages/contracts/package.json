@@ -1,0 +1,8 @@
+{
+  "name": "@synapse/contracts",
+  "version": "0.1.0",
+  "private": true,
+  "types": "./generated/index.d.ts",
+  "exports": { ".": { "types": "./generated/index.d.ts" } },
+  "scripts": { "typecheck": "tsc --noEmit --strict --skipLibCheck false tests/consumer.ts" }
+}

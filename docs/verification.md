@@ -1,0 +1,22 @@
+# Implementation verification · 2026-11-19
+
+The workspace started with project specifications only. The table records observed results from macOS arm64, Python 3.12.15, Node 24.22.1, and Docker Engine 29.9.2. No live candidate data or managed provider accounts were used.
+
+| Check | Observed result |
+| --- | --- |
+| Local verification (`make verify` checks) | Passed with frozen Python and JavaScript dependencies. **69** pytest cases, **3** benchmark workload tests, **4** assessment packaging tests, and **2** frontend tests passed. Contract regeneration matched the checked-in files (`openapi.json`, `schema.json`, `index.d.ts`, `fixture-consumers.ts`). Ruff (including `benchmarks/`), mypy (9 source files), strict TypeScript checks, Biome lint, the Next.js production build, and Compose configuration validation passed. |
+| Control-plane Compose smoke (`make smoke`) | Passed live via `bash infrastructure/docker/smoke.sh`. Verified empty-volume boot, Alembic migration, web-to-API readiness (`>Ready<`), database outage handling (`503` readiness, `200` liveness, `>Unavailable<` web status), database restart recovery, idempotent re-migration, persisted row integrity, and clean project/volume teardown. |
+| SB-001 synthetic workload images (`verify-images.sh`) | Passed live via `bash benchmarks/sb001/workloads/verify-images.sh`. Built and executed `minimal` and `orderflow` images under `--network none --cap-drop ALL --security-opt no-new-privileges --cpus 2 --memory 1g --pids-limit 128`. Verified readiness probes, `git init`/`add`/`status`/`diff` as `candidate`, PostgreSQL restart recovery, logical `pg_dump`/`pg_restore` across an active uncommitted transaction (`SB001_LOGICAL_RESTORE_OK`), and rejection of peer-identity escalation to `postgres`. |
+| OrderFlow real PostgreSQL 16 acceptance | Passed live via `assessments/001-orderflow/tests/verify.py --postgres-bin /usr/lib/postgresql/16/bin` in a disposable `postgres:16-bookworm` + Python 3.12 container running as non-root `postgres` against a read-only package mount. Confirmed `starter` reproduces defects A1 & A2 (`3` visible + `2` hidden), `stage_a` reference passes (`3` visible + `2` hidden), and `stage_b` reference passes (`3` visible + `6` hidden, including `422`/`404`/`409`/`503` key release and committed retry recovery across a full API process restart) with zero pytest warnings. |
+| Reproducibility and separation | Candidate artifact tests verified deterministic archives and rejected symlinks. Release packaging produced disjoint candidate and evaluator artifacts. Tests validated stage instructions, artifact digests, and both database and database-free manifest configurations. |
+| Local PTY check | A real local pseudoterminal exchanged the synthetic workload. Fake-clock tests exercised interruption and the 110-minute schedule. Live provider latency and longevity remain unmeasured. |
+| Repository initialization | Verified with `git status --short`. The repository is rooted in this workspace with no commits or configured remote at verification time. |
+| Managed provider benchmark (SB-001) | No provider credentials were present. The measurement, crash recovery, cost, and cleanup tools were tested locally. Selection requires measured E2B and Daytona SB-001 results (including live 110-minute longevity, Daytona `os_user` vs. `USER postgres` entrypoint behavior, isolation gates, and billing), approved infrastructure spend, and a provider-selection ADR. |
+
+## Milestone disposition
+
+- **M0** is technically verified end-to-end (including live Compose smoke and contract generation). Formal ratification of ADR-005 through ADR-010 and the initial Git commit remain open.
+- **M1** is technically verified end-to-end against real PostgreSQL 16 (reproducible starter defects A1/A2, Stage A & Stage B references, restart recovery, and deterministic disjoint packaging). Pilot calibration with human participants and reviewers remains a pre-pilot milestone gate.
+- **M2** has verified synthetic workloads, protocol contracts, and benchmark tooling. Live E2B vs. Daytona SB-001 measurements, provider-selection ADR, and the production `SandboxProvider` adapter remain open. The integrated candidate IDE and M3–M8 lifecycle features depend on this milestone.
+
+The [CI workflow](../.github/workflows/verify.yml) runs the Compose smoke, workload image checks, and real OrderFlow PostgreSQL harness in disposable development environments.

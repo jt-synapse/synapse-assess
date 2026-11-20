@@ -1,0 +1,11 @@
+:root { font-family: Inter, system-ui, sans-serif; color: #18292c; background: #f8faf8; }
+body { margin: 0; }
+main { width: min(46rem, 90%); margin: 0 auto; }
+header { padding: 2rem 0; border-bottom: 1px solid #cdd9d4; font-size: 1rem; font-weight: 650; }
+h1 { margin: 4rem 0 1.75rem; font-size: clamp(2rem, 6vw, 3.5rem); letter-spacing: -.05em; }
+dl { display: flex; flex-wrap: wrap; gap: 1rem; justify-content: space-between; align-items: center; margin: 0; padding: 1.25rem; border: 1px solid #cdd9d4; border-radius: .5rem; background: white; }
+dt { font-weight: 550; }
+dd { margin: 0; display: flex; gap: .5rem; align-items: center; }
+.available { color: #14613e; }
+.unavailable { color: #8d341d; }
+.indicator { background: currentColor; width: .55rem; height: .55rem; border-radius: 50%; }

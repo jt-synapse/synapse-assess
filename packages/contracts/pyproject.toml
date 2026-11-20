@@ -1,0 +1,9 @@
+[project]
+name = "synapse-contracts"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = ["pydantic>=2.12,<3"]
+
+[build-system]
+requires = ["hatchling>=1.26,<2"]
+build-backend = "hatchling.build"

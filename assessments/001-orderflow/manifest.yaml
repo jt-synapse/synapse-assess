@@ -1,0 +1,15 @@
+{
+  "schema_version": 1,
+  "package_id": "001-orderflow",
+  "version": "1.0.0",
+  "title": "OrderFlow — Backend Reliability and AI-Assisted Engineering",
+  "runtime": {"image": "synapse/orderflow", "image_digest": null},
+  "services": ["postgresql"],
+  "stages": [
+    {"stage_id": "independent", "kind": "independent", "duration_minutes": 35, "ai_enabled": false, "instructions_path": "candidate/README.md"},
+    {"stage_id": "assisted", "kind": "assisted", "duration_minutes": 40, "ai_enabled": true, "instructions_path": "instructions/assisted.md"},
+    {"stage_id": "defense", "kind": "defense", "duration_minutes": 15, "ai_enabled": false, "instructions_path": "instructions/defense.md"}
+  ],
+  "candidate_artifact": {"path": "candidate", "sha256": null},
+  "evaluator_artifact": {"path": "evaluator", "sha256": null}
+}

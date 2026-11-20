@@ -1,0 +1,31 @@
+[project]
+name = "synapse-assess"
+version = "0.1.0"
+requires-python = ">=3.12,<3.13"
+dependencies = ["synapse-api", "synapse-contracts", "synapse-execution"]
+
+[tool.uv.workspace]
+members = ["apps/api", "packages/contracts", "services/execution"]
+
+[tool.uv.sources]
+synapse-api = { workspace = true }
+synapse-contracts = { workspace = true }
+synapse-execution = { workspace = true }
+
+[dependency-groups]
+dev = ["httpx>=0.28,<0.29", "mypy>=1.15,<3", "pytest>=8.4,<10", "ruff>=0.12,<1"]
+
+[tool.pytest.ini_options]
+testpaths = ["apps/api/tests", "packages/contracts/tests", "services/execution/tests", "benchmarks/sb001/tests"]
+addopts = ["--import-mode=importlib", "-ra"]
+
+[tool.ruff]
+target-version = "py312"
+line-length = 100
+extend-exclude = ["assessments", "node_modules"]
+
+[tool.mypy]
+python_version = "3.12"
+files = ["apps/api/src", "packages/contracts/src", "services/execution/src"]
+check_untyped_defs = true
+warn_unused_ignores = true

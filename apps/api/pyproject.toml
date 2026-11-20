@@ -1,0 +1,20 @@
+[project]
+name = "synapse-api"
+version = "0.1.0"
+requires-python = ">=3.12"
+dependencies = [
+    "alembic>=1.16,<2",
+    "fastapi>=0.121,<1",
+    "psycopg[binary]>=3.2,<4",
+    "redis>=6,<8",
+    "sqlalchemy>=2.0,<3",
+    "synapse-contracts",
+    "uvicorn>=0.38,<1",
+]
+
+[tool.uv.sources]
+synapse-contracts = { workspace = true }
+
+[build-system]
+requires = ["hatchling>=1.26,<2"]
+build-backend = "hatchling.build"

@@ -1,0 +1,36 @@
+name: Verify
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  control-plane:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.12.19"
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: make verify
+      - run: make smoke
+      - run: bash benchmarks/sb001/workloads/verify-images.sh
+  orderflow-authored-fixtures:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version-file: .python-version
+      - run: sudo apt-get update && sudo apt-get install -y postgresql-16
+      - run: python -m pip install -r assessments/001-orderflow/candidate/requirements.txt
+      - run: python -m unittest discover -s assessments/001-orderflow/tests -p test_package.py -v
+      - run: python assessments/001-orderflow/tests/verify.py --postgres-bin /usr/lib/postgresql/16/bin

@@ -1,0 +1,1774 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$ref": "#/$defs/AssessmentManifest",
+  "$defs": {
+    "AIReply": {
+      "additionalProperties": false,
+      "properties": {
+        "interaction_id": {
+          "format": "uuid",
+          "title": "Interaction Id",
+          "type": "string"
+        },
+        "model": {
+          "minLength": 1,
+          "title": "Model",
+          "type": "string"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "interaction_id",
+        "model",
+        "content"
+      ],
+      "title": "AIReply",
+      "type": "object"
+    },
+    "AIRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "messages": {
+          "items": {
+            "$ref": "#/$defs/UserMessage"
+          },
+          "minItems": 1,
+          "title": "Messages",
+          "type": "array"
+        },
+        "context": {
+          "$ref": "#/$defs/RepositoryContext"
+        }
+      },
+      "required": [
+        "messages",
+        "context"
+      ],
+      "title": "AIRequest",
+      "type": "object"
+    },
+    "ActiveStage": {
+      "additionalProperties": false,
+      "properties": {
+        "stage_id": {
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "stage_attempt_id": {
+          "format": "uuid",
+          "title": "Stage Attempt Id",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "deadline_at": {
+          "format": "date-time",
+          "title": "Deadline At",
+          "type": "string"
+        },
+        "ai_enabled": {
+          "title": "Ai Enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "stage_id",
+        "stage_attempt_id",
+        "started_at",
+        "deadline_at",
+        "ai_enabled"
+      ],
+      "title": "ActiveStage",
+      "type": "object"
+    },
+    "ArtifactSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 4096,
+          "title": "Path",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Sha256"
+        }
+      },
+      "required": [
+        "path",
+        "sha256"
+      ],
+      "title": "ArtifactSpec",
+      "type": "object"
+    },
+    "AssessmentManifest": {
+      "additionalProperties": false,
+      "description": "Trusted package metadata. Drafts can identify artifacts pending publication.",
+      "properties": {
+        "schema_version": {
+          "const": 1,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "package_id": {
+          "pattern": "^[a-z0-9][a-z0-9-]*$",
+          "title": "Package Id",
+          "type": "string"
+        },
+        "version": {
+          "minLength": 1,
+          "title": "Version",
+          "type": "string"
+        },
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "runtime": {
+          "$ref": "#/$defs/RuntimeSpec"
+        },
+        "services": {
+          "items": {
+            "const": "postgresql",
+            "type": "string"
+          },
+          "title": "Services",
+          "type": "array"
+        },
+        "stages": {
+          "items": {
+            "$ref": "#/$defs/StagePolicy"
+          },
+          "minItems": 1,
+          "title": "Stages",
+          "type": "array"
+        },
+        "candidate_artifact": {
+          "$ref": "#/$defs/ArtifactSpec"
+        },
+        "evaluator_artifact": {
+          "$ref": "#/$defs/ArtifactSpec"
+        }
+      },
+      "required": [
+        "schema_version",
+        "package_id",
+        "version",
+        "title",
+        "runtime",
+        "services",
+        "stages",
+        "candidate_artifact",
+        "evaluator_artifact"
+      ],
+      "title": "AssessmentManifest",
+      "type": "object"
+    },
+    "AudioAck": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "audio_ack",
+          "title": "Type",
+          "type": "string"
+        },
+        "stream_id": {
+          "format": "uuid",
+          "title": "Stream Id",
+          "type": "string"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type",
+        "stream_id",
+        "sequence"
+      ],
+      "title": "AudioAck",
+      "type": "object"
+    },
+    "AudioChunk": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "audio_chunk",
+          "title": "Type",
+          "type": "string"
+        },
+        "stream_id": {
+          "format": "uuid",
+          "title": "Stream Id",
+          "type": "string"
+        },
+        "sequence": {
+          "minimum": 0,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "start_ms": {
+          "minimum": 0,
+          "title": "Start Ms",
+          "type": "integer"
+        },
+        "audio_base64": {
+          "maxLength": 131072,
+          "minLength": 4,
+          "title": "Audio Base64",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "stream_id",
+        "sequence",
+        "start_ms",
+        "audio_base64"
+      ],
+      "title": "AudioChunk",
+      "type": "object"
+    },
+    "CreateSession": {
+      "additionalProperties": false,
+      "properties": {
+        "invitation_id": {
+          "format": "uuid",
+          "title": "Invitation Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "invitation_id"
+      ],
+      "title": "CreateSession",
+      "type": "object"
+    },
+    "DefenseAnswer": {
+      "additionalProperties": false,
+      "properties": {
+        "client_operation_id": {
+          "format": "uuid",
+          "title": "Client Operation Id",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "question_id": {
+          "minLength": 1,
+          "title": "Question Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "client_operation_id",
+        "text",
+        "question_id"
+      ],
+      "title": "DefenseAnswer",
+      "type": "object"
+    },
+    "ErrorDetail": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "minLength": 1,
+          "title": "Code",
+          "type": "string"
+        },
+        "message": {
+          "minLength": 1,
+          "title": "Message",
+          "type": "string"
+        },
+        "request_id": {
+          "format": "uuid",
+          "title": "Request Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "request_id"
+      ],
+      "title": "ErrorDetail",
+      "type": "object"
+    },
+    "ErrorEnvelope": {
+      "additionalProperties": false,
+      "properties": {
+        "error": {
+          "$ref": "#/$defs/ErrorDetail"
+        }
+      },
+      "required": [
+        "error"
+      ],
+      "title": "ErrorEnvelope",
+      "type": "object"
+    },
+    "EventPage": {
+      "additionalProperties": false,
+      "properties": {
+        "events": {
+          "items": {
+            "$ref": "#/$defs/EvidenceEvent"
+          },
+          "title": "Events",
+          "type": "array"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Next Cursor"
+        }
+      },
+      "required": [
+        "events",
+        "next_cursor"
+      ],
+      "title": "EventPage",
+      "type": "object"
+    },
+    "EvidenceEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "server_sequence": {
+          "exclusiveMinimum": 0,
+          "title": "Server Sequence",
+          "type": "integer"
+        },
+        "session_id": {
+          "format": "uuid",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stage Id"
+        },
+        "stage_attempt_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stage Attempt Id"
+        },
+        "event_type": {
+          "minLength": 1,
+          "title": "Event Type",
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "browser",
+            "control_plane",
+            "sandbox_broker",
+            "ai_gateway",
+            "transcription",
+            "evaluator",
+            "reviewer"
+          ],
+          "title": "Source",
+          "type": "string"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "received_at": {
+          "format": "date-time",
+          "title": "Received At",
+          "type": "string"
+        },
+        "schema_version": {
+          "exclusiveMinimum": 0,
+          "title": "Schema Version",
+          "type": "integer"
+        },
+        "deduplication_id": {
+          "format": "uuid",
+          "title": "Deduplication Id",
+          "type": "string"
+        },
+        "payload": {
+          "additionalProperties": {
+            "$ref": "#/$defs/EvidenceValue"
+          },
+          "title": "Payload",
+          "type": "object"
+        },
+        "artifact_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Artifact Id"
+        },
+        "artifact_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Artifact Sha256"
+        }
+      },
+      "required": [
+        "event_id",
+        "server_sequence",
+        "session_id",
+        "stage_id",
+        "stage_attempt_id",
+        "event_type",
+        "source",
+        "occurred_at",
+        "received_at",
+        "schema_version",
+        "deduplication_id",
+        "payload"
+      ],
+      "title": "EvidenceEvent",
+      "type": "object"
+    },
+    "EvidenceReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "event_id": {
+          "format": "uuid",
+          "title": "Event Id",
+          "type": "string"
+        },
+        "server_sequence": {
+          "exclusiveMinimum": 0,
+          "title": "Server Sequence",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "event_id",
+        "server_sequence"
+      ],
+      "title": "EvidenceReceipt",
+      "type": "object"
+    },
+    "EvidenceValue": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "integer"
+        },
+        {
+          "type": "number"
+        },
+        {
+          "type": "boolean"
+        },
+        {
+          "items": {
+            "$ref": "#/$defs/EvidenceValue"
+          },
+          "type": "array"
+        },
+        {
+          "additionalProperties": {
+            "$ref": "#/$defs/EvidenceValue"
+          },
+          "type": "object"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "ExecutionRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "command_id": {
+          "minLength": 1,
+          "title": "Command Id",
+          "type": "string"
+        },
+        "workspace_revision": {
+          "minimum": 0,
+          "title": "Workspace Revision",
+          "type": "integer"
+        },
+        "client_operation_id": {
+          "format": "uuid",
+          "title": "Client Operation Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "command_id",
+        "workspace_revision",
+        "client_operation_id"
+      ],
+      "title": "ExecutionRequest",
+      "type": "object"
+    },
+    "ExecutionResult": {
+      "additionalProperties": false,
+      "properties": {
+        "execution_id": {
+          "format": "uuid",
+          "title": "Execution Id",
+          "type": "string"
+        },
+        "workspace_revision": {
+          "minimum": 0,
+          "title": "Workspace Revision",
+          "type": "integer"
+        },
+        "command": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Command",
+          "type": "array"
+        },
+        "status": {
+          "enum": [
+            "COMPLETED",
+            "TIMED_OUT",
+            "FAILED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Exit Code"
+        },
+        "duration_ms": {
+          "minimum": 0,
+          "title": "Duration Ms",
+          "type": "integer"
+        },
+        "stdout_artifact_id": {
+          "format": "uuid",
+          "title": "Stdout Artifact Id",
+          "type": "string"
+        },
+        "stderr_artifact_id": {
+          "format": "uuid",
+          "title": "Stderr Artifact Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "execution_id",
+        "workspace_revision",
+        "command",
+        "status",
+        "exit_code",
+        "duration_ms",
+        "stdout_artifact_id",
+        "stderr_artifact_id"
+      ],
+      "title": "ExecutionResult",
+      "type": "object"
+    },
+    "FileContent": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 4096,
+          "title": "Path",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 0,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "revision",
+        "content"
+      ],
+      "title": "FileContent",
+      "type": "object"
+    },
+    "FileCreate": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 4096,
+          "title": "Path",
+          "type": "string"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        },
+        "expected_workspace_revision": {
+          "minimum": 0,
+          "title": "Expected Workspace Revision",
+          "type": "integer"
+        },
+        "client_operation_id": {
+          "format": "uuid",
+          "title": "Client Operation Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "content",
+        "expected_workspace_revision",
+        "client_operation_id"
+      ],
+      "title": "FileCreate",
+      "type": "object"
+    },
+    "FileEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 4096,
+          "title": "Path",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 0,
+          "title": "Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "path",
+        "revision"
+      ],
+      "title": "FileEntry",
+      "type": "object"
+    },
+    "FileList": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_revision": {
+          "minimum": 0,
+          "title": "Workspace Revision",
+          "type": "integer"
+        },
+        "files": {
+          "items": {
+            "$ref": "#/$defs/FileEntry"
+          },
+          "title": "Files",
+          "type": "array"
+        }
+      },
+      "required": [
+        "workspace_revision",
+        "files"
+      ],
+      "title": "FileList",
+      "type": "object"
+    },
+    "FileMutation": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 4096,
+          "title": "Path",
+          "type": "string"
+        },
+        "expected_revision": {
+          "minimum": 0,
+          "title": "Expected Revision",
+          "type": "integer"
+        },
+        "client_operation_id": {
+          "format": "uuid",
+          "title": "Client Operation Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "expected_revision",
+        "client_operation_id"
+      ],
+      "title": "FileMutation",
+      "type": "object"
+    },
+    "FileRename": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 4096,
+          "title": "Path",
+          "type": "string"
+        },
+        "expected_revision": {
+          "minimum": 0,
+          "title": "Expected Revision",
+          "type": "integer"
+        },
+        "client_operation_id": {
+          "format": "uuid",
+          "title": "Client Operation Id",
+          "type": "string"
+        },
+        "destination": {
+          "maxLength": 4096,
+          "title": "Destination",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "expected_revision",
+        "client_operation_id",
+        "destination"
+      ],
+      "title": "FileRename",
+      "type": "object"
+    },
+    "FileRevision": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 4096,
+          "title": "Path",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 0,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "workspace_revision": {
+          "minimum": 0,
+          "title": "Workspace Revision",
+          "type": "integer"
+        },
+        "content_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Sha256",
+          "type": "string"
+        },
+        "saved_at": {
+          "format": "date-time",
+          "title": "Saved At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "revision",
+        "workspace_revision",
+        "content_sha256",
+        "saved_at"
+      ],
+      "title": "FileRevision",
+      "type": "object"
+    },
+    "FileWrite": {
+      "additionalProperties": false,
+      "properties": {
+        "path": {
+          "maxLength": 4096,
+          "title": "Path",
+          "type": "string"
+        },
+        "expected_revision": {
+          "minimum": 0,
+          "title": "Expected Revision",
+          "type": "integer"
+        },
+        "client_operation_id": {
+          "format": "uuid",
+          "title": "Client Operation Id",
+          "type": "string"
+        },
+        "content": {
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "path",
+        "expected_revision",
+        "client_operation_id",
+        "content"
+      ],
+      "title": "FileWrite",
+      "type": "object"
+    },
+    "FinalizeReview": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_revision": {
+          "minimum": 0,
+          "title": "Expected Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "expected_revision"
+      ],
+      "title": "FinalizeReview",
+      "type": "object"
+    },
+    "Invitation": {
+      "additionalProperties": false,
+      "properties": {
+        "invitation_id": {
+          "format": "uuid",
+          "title": "Invitation Id",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "invitation_id",
+        "expires_at"
+      ],
+      "title": "Invitation",
+      "type": "object"
+    },
+    "InviteRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "candidate_id": {
+          "format": "uuid",
+          "title": "Candidate Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "candidate_id"
+      ],
+      "title": "InviteRequest",
+      "type": "object"
+    },
+    "Liveness": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "alive",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "Liveness",
+      "type": "object"
+    },
+    "Rating": {
+      "additionalProperties": false,
+      "properties": {
+        "criterion_id": {
+          "minLength": 1,
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "dimension": {
+          "enum": [
+            "independent",
+            "assisted"
+          ],
+          "title": "Dimension",
+          "type": "string"
+        },
+        "score": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Score"
+        },
+        "rationale": {
+          "minLength": 1,
+          "title": "Rationale",
+          "type": "string"
+        },
+        "evidence_ids": {
+          "items": {
+            "format": "uuid",
+            "type": "string"
+          },
+          "title": "Evidence Ids",
+          "type": "array"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "dimension",
+        "score",
+        "rationale",
+        "evidence_ids"
+      ],
+      "title": "Rating",
+      "type": "object"
+    },
+    "Readiness": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "const": "ready",
+          "title": "Status",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "Readiness",
+      "type": "object"
+    },
+    "RecordingConsent": {
+      "additionalProperties": false,
+      "properties": {
+        "notice_version": {
+          "minLength": 1,
+          "title": "Notice Version",
+          "type": "string"
+        },
+        "granted": {
+          "title": "Granted",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "notice_version",
+        "granted"
+      ],
+      "title": "RecordingConsent",
+      "type": "object"
+    },
+    "Report": {
+      "additionalProperties": false,
+      "properties": {
+        "report_id": {
+          "format": "uuid",
+          "title": "Report Id",
+          "type": "string"
+        },
+        "session_id": {
+          "format": "uuid",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "rubric_version": {
+          "minLength": 1,
+          "title": "Rubric Version",
+          "type": "string"
+        },
+        "ratings": {
+          "items": {
+            "$ref": "#/$defs/Rating"
+          },
+          "title": "Ratings",
+          "type": "array"
+        },
+        "integrity_controls": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Integrity Controls",
+          "type": "array"
+        },
+        "limitations": {
+          "items": {
+            "minLength": 1,
+            "type": "string"
+          },
+          "title": "Limitations",
+          "type": "array"
+        },
+        "revision": {
+          "minimum": 0,
+          "title": "Revision",
+          "type": "integer"
+        },
+        "finalized_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Finalized At"
+        }
+      },
+      "required": [
+        "report_id",
+        "session_id",
+        "rubric_version",
+        "ratings",
+        "integrity_controls",
+        "limitations",
+        "revision",
+        "finalized_at"
+      ],
+      "title": "Report",
+      "type": "object"
+    },
+    "ReportPage": {
+      "additionalProperties": false,
+      "properties": {
+        "reports": {
+          "items": {
+            "$ref": "#/$defs/Report"
+          },
+          "title": "Reports",
+          "type": "array"
+        },
+        "next_cursor": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Next Cursor"
+        }
+      },
+      "required": [
+        "reports",
+        "next_cursor"
+      ],
+      "title": "ReportPage",
+      "type": "object"
+    },
+    "RepositoryContext": {
+      "additionalProperties": false,
+      "properties": {
+        "workspace_revision": {
+          "minimum": 0,
+          "title": "Workspace Revision",
+          "type": "integer"
+        },
+        "file_paths": {
+          "items": {
+            "maxLength": 4096,
+            "type": "string"
+          },
+          "title": "File Paths",
+          "type": "array"
+        }
+      },
+      "required": [
+        "workspace_revision",
+        "file_paths"
+      ],
+      "title": "RepositoryContext",
+      "type": "object"
+    },
+    "ReviewRating": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_revision": {
+          "minimum": 0,
+          "title": "Expected Revision",
+          "type": "integer"
+        },
+        "rating": {
+          "$ref": "#/$defs/Rating"
+        }
+      },
+      "required": [
+        "expected_revision",
+        "rating"
+      ],
+      "title": "ReviewRating",
+      "type": "object"
+    },
+    "ReviewerRubric": {
+      "additionalProperties": false,
+      "properties": {
+        "rubric_version": {
+          "minLength": 1,
+          "title": "Rubric Version",
+          "type": "string"
+        },
+        "criteria": {
+          "items": {
+            "$ref": "#/$defs/RubricCriterion"
+          },
+          "title": "Criteria",
+          "type": "array"
+        }
+      },
+      "required": [
+        "rubric_version",
+        "criteria"
+      ],
+      "title": "ReviewerRubric",
+      "type": "object"
+    },
+    "RubricCriterion": {
+      "additionalProperties": false,
+      "properties": {
+        "criterion_id": {
+          "minLength": 1,
+          "title": "Criterion Id",
+          "type": "string"
+        },
+        "dimension": {
+          "enum": [
+            "independent",
+            "assisted"
+          ],
+          "title": "Dimension",
+          "type": "string"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "anchors": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Anchors",
+          "type": "array"
+        }
+      },
+      "required": [
+        "criterion_id",
+        "dimension",
+        "description",
+        "anchors"
+      ],
+      "title": "RubricCriterion",
+      "type": "object"
+    },
+    "RuntimeSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "image": {
+          "minLength": 1,
+          "title": "Image",
+          "type": "string"
+        },
+        "image_digest": {
+          "anyOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Image Digest"
+        }
+      },
+      "required": [
+        "image",
+        "image_digest"
+      ],
+      "title": "RuntimeSpec",
+      "type": "object"
+    },
+    "Session": {
+      "additionalProperties": false,
+      "properties": {
+        "session_id": {
+          "format": "uuid",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "assessment_version_id": {
+          "format": "uuid",
+          "title": "Assessment Version Id",
+          "type": "string"
+        },
+        "state": {
+          "$ref": "#/$defs/SessionState"
+        },
+        "server_time": {
+          "format": "date-time",
+          "title": "Server Time",
+          "type": "string"
+        },
+        "stage": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/ActiveStage"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "workspace": {
+          "$ref": "#/$defs/Workspace"
+        }
+      },
+      "required": [
+        "session_id",
+        "assessment_version_id",
+        "state",
+        "server_time",
+        "stage",
+        "workspace"
+      ],
+      "title": "Session",
+      "type": "object"
+    },
+    "SessionState": {
+      "enum": [
+        "CREATED",
+        "PROVISIONING",
+        "READY",
+        "STAGE_A_ACTIVE",
+        "STAGE_A_SEALING",
+        "STAGE_B_ACTIVE",
+        "STAGE_B_SEALING",
+        "DEFENSE_ACTIVE",
+        "SUBMITTED",
+        "EVALUATING",
+        "REVIEWED",
+        "FINALIZED",
+        "CANCELED",
+        "EXPIRED",
+        "FAILED"
+      ],
+      "title": "SessionState",
+      "type": "string"
+    },
+    "Snapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "snapshot_id": {
+          "format": "uuid",
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "session_id": {
+          "format": "uuid",
+          "title": "Session Id",
+          "type": "string"
+        },
+        "assessment_version_id": {
+          "format": "uuid",
+          "title": "Assessment Version Id",
+          "type": "string"
+        },
+        "stage_id": {
+          "anyOf": [
+            {
+              "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stage Id"
+        },
+        "stage_attempt_id": {
+          "anyOf": [
+            {
+              "format": "uuid",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Stage Attempt Id"
+        },
+        "purpose": {
+          "enum": [
+            "initial",
+            "stage_seal",
+            "submission"
+          ],
+          "title": "Purpose",
+          "type": "string"
+        },
+        "workspace_revision": {
+          "minimum": 0,
+          "title": "Workspace Revision",
+          "type": "integer"
+        },
+        "source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Sha256",
+          "type": "string"
+        },
+        "image_digest": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "title": "Image Digest",
+          "type": "string"
+        },
+        "created_at": {
+          "format": "date-time",
+          "title": "Created At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "snapshot_id",
+        "session_id",
+        "assessment_version_id",
+        "stage_id",
+        "stage_attempt_id",
+        "purpose",
+        "workspace_revision",
+        "source_sha256",
+        "image_digest",
+        "created_at"
+      ],
+      "title": "Snapshot",
+      "type": "object"
+    },
+    "StageCompletion": {
+      "additionalProperties": false,
+      "properties": {
+        "stage_attempt_id": {
+          "format": "uuid",
+          "title": "Stage Attempt Id",
+          "type": "string"
+        },
+        "expected_workspace_revision": {
+          "minimum": 0,
+          "title": "Expected Workspace Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "stage_attempt_id",
+        "expected_workspace_revision"
+      ],
+      "title": "StageCompletion",
+      "type": "object"
+    },
+    "StagePolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "stage_id": {
+          "pattern": "^[a-z][a-z0-9_-]{0,63}$",
+          "title": "Stage Id",
+          "type": "string"
+        },
+        "kind": {
+          "enum": [
+            "independent",
+            "assisted",
+            "defense"
+          ],
+          "title": "Kind",
+          "type": "string"
+        },
+        "duration_minutes": {
+          "exclusiveMinimum": 0,
+          "title": "Duration Minutes",
+          "type": "integer"
+        },
+        "instructions_path": {
+          "anyOf": [
+            {
+              "maxLength": 4096,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Instructions Path"
+        },
+        "instructions_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Instructions Sha256"
+        },
+        "ai_enabled": {
+          "title": "Ai Enabled",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "stage_id",
+        "kind",
+        "duration_minutes",
+        "ai_enabled"
+      ],
+      "title": "StagePolicy",
+      "type": "object"
+    },
+    "TerminalClose": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "close",
+          "title": "Type",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "reason"
+      ],
+      "title": "TerminalClose",
+      "type": "object"
+    },
+    "TerminalHeartbeat": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "heartbeat",
+          "title": "Type",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type"
+      ],
+      "title": "TerminalHeartbeat",
+      "type": "object"
+    },
+    "TerminalInput": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "input",
+          "title": "Type",
+          "type": "string"
+        },
+        "data": {
+          "title": "Data",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "data"
+      ],
+      "title": "TerminalInput",
+      "type": "object"
+    },
+    "TerminalOutput": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "output",
+          "title": "Type",
+          "type": "string"
+        },
+        "data": {
+          "title": "Data",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "data"
+      ],
+      "title": "TerminalOutput",
+      "type": "object"
+    },
+    "TerminalResize": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "resize",
+          "title": "Type",
+          "type": "string"
+        },
+        "rows": {
+          "exclusiveMinimum": 0,
+          "title": "Rows",
+          "type": "integer"
+        },
+        "cols": {
+          "exclusiveMinimum": 0,
+          "title": "Cols",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "type",
+        "rows",
+        "cols"
+      ],
+      "title": "TerminalResize",
+      "type": "object"
+    },
+    "TerminalTicket": {
+      "additionalProperties": false,
+      "properties": {
+        "ticket": {
+          "minLength": 1,
+          "title": "Ticket",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "ticket",
+        "expires_at"
+      ],
+      "title": "TerminalTicket",
+      "type": "object"
+    },
+    "TranscriptCorrection": {
+      "additionalProperties": false,
+      "properties": {
+        "client_operation_id": {
+          "format": "uuid",
+          "title": "Client Operation Id",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "reason": {
+          "minLength": 1,
+          "title": "Reason",
+          "type": "string"
+        }
+      },
+      "required": [
+        "client_operation_id",
+        "text",
+        "reason"
+      ],
+      "title": "TranscriptCorrection",
+      "type": "object"
+    },
+    "TranscriptSegment": {
+      "additionalProperties": false,
+      "properties": {
+        "type": {
+          "const": "transcript_segment",
+          "title": "Type",
+          "type": "string"
+        },
+        "segment_id": {
+          "format": "uuid",
+          "title": "Segment Id",
+          "type": "string"
+        },
+        "start_ms": {
+          "minimum": 0,
+          "title": "Start Ms",
+          "type": "integer"
+        },
+        "end_ms": {
+          "minimum": 0,
+          "title": "End Ms",
+          "type": "integer"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        },
+        "is_final": {
+          "title": "Is Final",
+          "type": "boolean"
+        },
+        "language": {
+          "minLength": 1,
+          "title": "Language",
+          "type": "string"
+        },
+        "transcription_model": {
+          "minLength": 1,
+          "title": "Transcription Model",
+          "type": "string"
+        }
+      },
+      "required": [
+        "type",
+        "segment_id",
+        "start_ms",
+        "end_ms",
+        "text",
+        "is_final",
+        "language",
+        "transcription_model"
+      ],
+      "title": "TranscriptSegment",
+      "type": "object"
+    },
+    "UserMessage": {
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "const": "user",
+          "title": "Role",
+          "type": "string"
+        },
+        "content": {
+          "minLength": 1,
+          "title": "Content",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role",
+        "content"
+      ],
+      "title": "UserMessage",
+      "type": "object"
+    },
+    "Workspace": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "PENDING",
+            "READY",
+            "UNAVAILABLE",
+            "CLOSED"
+          ],
+          "title": "Status",
+          "type": "string"
+        },
+        "revision": {
+          "minimum": 0,
+          "title": "Revision",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "status",
+        "revision"
+      ],
+      "title": "Workspace",
+      "type": "object"
+    },
+    "WrittenReasoning": {
+      "additionalProperties": false,
+      "properties": {
+        "client_operation_id": {
+          "format": "uuid",
+          "title": "Client Operation Id",
+          "type": "string"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "client_operation_id",
+        "text"
+      ],
+      "title": "WrittenReasoning",
+      "type": "object"
+    }
+  }
+}
